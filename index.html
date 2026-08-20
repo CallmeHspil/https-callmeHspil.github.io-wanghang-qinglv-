@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的小说文集</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{max-width:680px;margin:0 auto;padding:20px 16px;font-size:18px;line-height:1.8;background:#f8f5f0;color:#222;transition:0.2s;}
+body.dark{background:#191919;color:#dddddd;}
+.ctrl{margin-bottom:18px;display:flex;gap:8px;flex-wrap:wrap;}
+button{padding:7px 12px;border:none;border-radius:7px;background:#4788dd;color:#fff;font-size:15px;}
+#chapTitle{margin-bottom:14px;font-size:22px;font-weight:bold;}
+#content{white-space:pre-wrap;word-break:break-all;}
+.nav{margin-top:24px;display:flex;justify-content:space-between;}
+</style>
+</head>
+<body>
+<div class="ctrl">
+<button onclick="toggleDark()">黑夜模式</button>
+<button onclick="fontMinus()">字号‑</button>
+<button onclick="fontPlus()">字号+</button>
+</div>
+
+<div id="chapTitle"></div>
+<div id="content">加载中……</div>
+
+<div class="nav">
+<button id="prevBtn" onclick="prevChapter()">上一章</button>
+<button id="nextBtn" onclick="nextChapter()">下一章</button>
+</div>
+
+<script>
+// ==========15章，在这里，你可以修改每一章展示的标题==========
+const chapterList = [
+    {file:"ch1.txt", title:"第一章"},
+    {file:"ch2.txt", title:"第二章"},
+    {file:"ch3.txt", title:"第三章"},
+    {file:"ch4.txt", title:"第四章"},
+    {file:"ch5.txt", title:"第五章"},
+    {file:"ch6.txt", title:"第六章"},
+    {file:"ch7.txt", title:"第七章"},
+    {file:"ch8.txt", title:"第八章"},
+    {file:"ch9.txt", title:"第九章"},
+    {file:"ch10.txt", title:"第十章"},
+    {file:"ch11.txt", title:"第十一章"},
+    {file:"ch12.txt", title:"第十二章"},
+    {file:"ch13.txt", title:"第十三章"},
+    {file:"ch14.txt", title:"第十四章"},
+    {file:"ch15.txt", title:"第十五章"}
+];
+// ==========================================================
+
+let currentIndex = 0;
+
+function renderChapter(){
+    const item = chapterList[currentIndex];
+    fetch("./"+item.file)
+    .then(res=>{
+        if(!res.ok) throw new Error("文件不存在");
+        return res.text();
+    })
+    .then(text=>{
+        const lines = text.split(/\r?\n/);
+        document.getElementById("chapTitle").innerText = lines[0];
+        lines.shift();
+        document.getElementById("content").innerText = lines.join("\n");
+    })
+    .catch(()=>{
+        document.getElementById("content").innerText = "⚠该章节尚未上传txt文件";
+    });
+
+    document.getElementById("prevBtn").disabled = currentIndex <= 0;
+    document.getElementById("nextBtn").disabled = currentIndex >= chapterList.length‑1;
+}
+
+function prevChapter(){
+    if(currentIndex>0){
+        currentIndex‑‑;
+        renderChapter();
+    }
+}
+function nextChapter(){
+    if(currentIndex < chapterList.length‑1){
+        currentIndex++;
+        renderChapter();
+    }
+}
+
+function toggleDark(){
+    document.body.classList.toggle("dark");
+}
+function fontPlus(){
+    let s = parseFloat(getComputedStyle(document.body).fontSize);
+    document.body.style.fontSize = (s+2)+"px";
+}
+function fontMinus(){
+    let s = parseFloat(getComputedStyle(document.body).fontSize);
+    document.body.style.fontSize = (s‑2)+"px";
+}
+
+renderChapter();
+</script>
+</body>
+</html>
